@@ -30,14 +30,14 @@ var (
 	savefiles    []string
 	stringF      bool
 	//SearchMap     map[string]logenc.LogList
-	date_layout   = "01/02/2006"
-	startUnixTime int64
-	endUnixTime   int64
-	pointH        string
-	filename      string
-	PrevNetConn   net.Conn
-	dir           = kingpin.Arg("dir", "Directory path(s) to look for files").Default(pathdata + "/repdata").ExistingFilesOrDirs()
-	cron          = kingpin.Flag("cron", "").Short('t').Default("1h").String()
+	//date_layout   = "01/02/2006"
+	//startUnixTime int64
+	//endUnixTime   int64
+	//pointH        string
+	//filename      string
+	PrevNetConn net.Conn
+	dir         = kingpin.Arg("dir", "Directory path(s) to look for files").Default(pathdata + "/repdata").ExistingFilesOrDirs()
+	cron        = kingpin.Flag("cron", "").Short('t').Default("1h").String()
 )
 
 func main() {
@@ -77,7 +77,7 @@ func main() {
 	fileserver := http.FileServer(fsRoot)
 	router.HandleFunc("/", rootPage)
 	router.HandleFunc("/products/{fetchCountPercentage}", products).Methods("GET")
-	router.HandleFunc("/files/{fetchPercentage}", products).Methods("GET")
+	router.HandleFunc("/files/{fetchPercentage}", filesL).Methods("GET")
 
 	router.PathPrefix("/vfs/").Handler(http.StripPrefix("/vfs/", fileserver))
 	router.HandleFunc("/ws/{b64file}", WSHandler).Methods("GET")
@@ -118,6 +118,7 @@ func products(w http.ResponseWriter, r *http.Request) {
 	}
 
 }
+
 func filesL(w http.ResponseWriter, r *http.Request) {
 
 	fetchPercentage, errInput := strconv.ParseFloat(mux.Vars(r)["fetchPercentage"], 64)
@@ -168,9 +169,7 @@ var productList = []product{
 }
 
 type files struct {
-	Name string
+	Path string
 }
 
-var filesList = []files{
-	files{"KEK"},
-}
+var filesList = []files{}
