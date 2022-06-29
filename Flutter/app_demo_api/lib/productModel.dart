@@ -16,5 +16,5 @@ class File {
 
   File({this.name});
 
-  File.fromJson(Map<String, dynamic> sting) : name = sting["Name"];
+  File.fromJson(Map<String, dynamic> sting) : name = sting["Path"];
 }
