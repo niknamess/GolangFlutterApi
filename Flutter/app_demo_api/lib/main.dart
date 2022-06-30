@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:app_demo_api/productModel.dart';
+import 'package:app_demo_api/Model.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
+import 'package:path/path.dart';
 
 void main() => runApp(const MyApp());
 
@@ -71,7 +72,7 @@ class MyHomePage extends StatelessWidget {
                     itemCount: snapshot.data.length,
                     itemBuilder: (BuildContext context, int index) {
                       return ListTile(
-                        title: Text(snapshot.data[0].name),
+                        title: Text(basename(snapshot.data[index].name)),
                         onTap: () {
                           // Update the state of the app
                           // ...
@@ -106,97 +107,3 @@ class MyHomePage extends StatelessWidget {
     return filetList;
   }
 }
-/* // ignore_for_file: missing_return
-
-import 'package:flutter/material.dart';
-import 'package:app_demo_api/productModel.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert' as convert;
-
-void main() {
-  runApp(AppDemo());
-}
-
-class AppDemo extends StatefulWidget {
-  AppDemo({Key key}) : super(key: key);
-
-  @override
-  _AppDemoState createState() => _AppDemoState();
-}
-
-class _AppDemoState extends State<AppDemo> {
-  double fetchCountPercentage = 20.0; // default 10%
-  double fetchPercentage = 20.0;
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-        home: Scaffold(
-            backgroundColor: Colors.blueGrey,
-            body: SizedBox.expand(
-                child: Stack(
-              children: [
-                FutureBuilder<List<File>>(
-                  future: fetchFromServerFile(),
-                  builder: (BuildContext context, AsyncSnapshot snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    }
-
-                    if (snapshot.hasError) {
-                      return Center(
-                        child: Text("${snapshot.error}",
-                            style: TextStyle(color: Colors.redAccent)),
-                      );
-                    }
-
-                    if (snapshot.hasData) {
-                      return ListView.builder(
-                        itemCount: snapshot.data.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          return Card(
-                              child: ListTile(
-                            title: Text(snapshot.data[index].name),
-                          ));
-                        },
-                      );
-                    }
-                  },
-                ),
-                Positioned(
-                    bottom: 5,
-                    right: 5,
-                    child: Slider(
-                      value: fetchPercentage,
-                      min: 0,
-                      max: 100,
-                      divisions: 10,
-                      label: fetchPercentage.toString(),
-                      onChanged: (double value) {
-                        setState(() {
-                          fetchPercentage = value;
-                        });
-                      },
-                    ))
-              ],
-            ))));
-  }
-
-  Future<List<File>> fetchFromServerFile() async {
-    var url = "http://192.168.0.101:5500//files/$fetchPercentage";
-    var response = await http.get(url);
-
-    List<File> filetList = [];
-    if (response.statusCode == 200) {
-      var fileMap = convert.jsonDecode(response.body);
-      for (final item in fileMap) {
-        filetList.add(File.fromJson(item));
-      }
-    }
-
-    return filetList;
-  }
-}
- */
