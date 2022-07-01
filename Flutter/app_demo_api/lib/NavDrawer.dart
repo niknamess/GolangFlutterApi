@@ -6,6 +6,11 @@ import 'package:path/path.dart';
 import 'package:app_demo_api/wscontent.dart';
 import 'package:app_demo_api/main.dart';
 
+class Filename {
+  String path;
+  Filename({required this.path});
+}
+
 class NavDrawer extends StatelessWidget {
   double fetchPercentage = 100.0;
   @override
@@ -64,9 +69,14 @@ class NavDrawer extends StatelessWidget {
                     return ListTile(
                       title: Text(basename(snapshot.data[index].name)),
                       onTap: () {
+                        final filename =
+                            Filename(path: snapshot.data[index].name);
                         Navigator.of(context).pop();
                         Navigator.of(context).push(MaterialPageRoute(
-                            builder: (BuildContext context) => initWS()));
+                          builder: (BuildContext context) => initWS(
+                            filename: filename,
+                          ),
+                        ));
                         // Update the state of the app
                         // ...
                         // Then close the drawer
