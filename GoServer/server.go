@@ -1,17 +1,22 @@
 package main
 
 import (
+	"GoServer/util"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"log"
 	"net"
 	"net/http"
+	"os"
+	"path/filepath"
 	"strconv"
 	"time"
 
 	"github.com/alecthomas/kingpin"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
+	"github.com/hpcloud/tail"
 	"github.com/shurcooL/httpfs/union"
 	"github.com/spf13/afero"
 )
@@ -77,7 +82,7 @@ func main() {
 	fileserver := http.FileServer(fsRoot)
 	router.HandleFunc("/", rootPage)
 	router.HandleFunc("/files/{fetchPercentage}", filesL).Methods("GET")
-
+	router.HandleFunc("/data/{b64file}", filedata).Methods("GET")
 	router.PathPrefix("/vfs/").Handler(http.StripPrefix("/vfs/", fileserver))
 	router.HandleFunc("/ws/{b64file}", WSHandler).Methods("GET")
 
@@ -98,7 +103,7 @@ func filesL(w http.ResponseWriter, r *http.Request) {
 	fetchCount := 0
 
 	if errInput != nil {
-		fmt.Println("gg ", errInput.Error())
+		fmt.Println(errInput.Error())
 	} else {
 		fetchCount = int(float64(len(filesList)) * fetchPercentage / 100)
 		if fetchCount > len(filesList) {
@@ -117,9 +122,71 @@ func filesL(w http.ResponseWriter, r *http.Request) {
 	}
 
 }
+func filedata(w http.ResponseWriter, r *http.Request) {
+	filenameB, _ := base64.StdEncoding.DecodeString(mux.Vars(r)["b64file"])
+	filename := string(filenameB)
+	if filenameB == nil {
+		return
+	}
+
+	/* if filename == "undefined" {
+		ViewDir(conn, search)
+	}
+	*/
+	if savefiles == nil {
+		//Indexing(filename)
+		savefiles = append(savefiles, filename)
+	} else {
+		for i := 0; i < len(savefiles); i++ {
+			if filename != savefiles[i] {
+				stringF = true
+			} else {
+				stringF = false
+			}
+		}
+
+	}
+	if stringF {
+		//Indexing(filename)
+		savefiles = append(savefiles, filename)
+
+	}
+
+	// sanitize the file if it is present in the index or not.
+	filename = filepath.Clean(filename)
+	ok := false
+	for _, wFile := range Conf.Dir {
+		if filename == wFile {
+			ok = true
+			break
+		}
+	}
+	if ok {
+		FileGet(filename, w)
+	}
+
+}
 
 type files struct {
 	Path string
 }
 
 var filesList = []files{}
+
+func FileGet(fileName string, w http.ResponseWriter) {
+	t, err := tail.TailFile(fileName,
+		tail.Config{
+			Follow: true,
+			Location: &tail.SeekInfo{
+				Whence: os.SEEK_END,
+			},
+		})
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "Error occurred in opening the file: ", err)
+	}
+	for line := range t.Lines {
+		xmlsimple := util.ProcLineDecodeXML(line.Text)
+		w.Header().Set("content-type", "application/xml")
+		w.Write([]byte(util.EncodeXML(xmlsimple)))
+	}
+}
