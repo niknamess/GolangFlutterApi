@@ -1,1 +1,0 @@
-/home/nik/projects/test/FlutterGolangAPI/Flutter/app_demo_api/android/app/src/main/kotlin/com/example/app_demo_api/MainActivity.kt
