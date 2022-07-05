@@ -4,7 +4,6 @@ import (
 	"encoding/base64"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -203,7 +202,7 @@ func ParseConfig(dir []string, cron string) error {
 	tmp := make([]interface{}, len(dir))
 	for idx, x := range dir {
 		tmp[idx] = x
-		log.Println(x)
+		//log.Println(x)
 	}
 
 	// Setting up cron job to keep indexing the files

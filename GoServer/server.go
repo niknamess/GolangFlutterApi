@@ -5,12 +5,14 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"net"
 	"net/http"
 	"os"
 	"path/filepath"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/alecthomas/kingpin"
@@ -69,7 +71,7 @@ func main() {
 	for i := 0; i < len(Conf.Dir); i++ {
 		filesList = append(filesList, files{Conf.Dir[i]})
 	}
-	fmt.Println(filesList)
+	//fmt.Println(filesList)
 	dir := pathdata + "/repdata/"
 	time.Sleep(time.Second * 10)
 	fsbase := afero.NewBasePathFs(afero.NewOsFs(), dir)
@@ -153,6 +155,8 @@ func filedata(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// sanitize the file if it is present in the index or not.
+	fmt.Println("sStart ", filename)
+
 	filename = filepath.Clean(filename)
 	ok := false
 	for _, wFile := range Conf.Dir {
@@ -162,7 +166,36 @@ func filedata(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	if ok {
-		FileGet(filename, w)
+		var listdata []string
+
+		listdata = append(listdata, "<?xml version=\"1.0\"?><catalog>")
+		fileN := filepath.Base(filename)
+		fmt.Println("Start ", filename)
+		t, err := tail.TailFile("/var/local/logi2/repdata/"+fileN,
+			tail.Config{
+				//ReOpen: true,
+				Follow: false,
+				Location: &tail.SeekInfo{
+					//Offset: current,
+					Whence: io.SeekStart, //!!!
+
+				},
+			})
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "Error occurred in opening the file: ", err)
+		}
+		for line := range t.Lines {
+			xmlsimple := util.ProcLineDecodeXML(line.Text)
+			//util.EncodeXML(xmlsimple)
+			listdata = append(listdata, util.EncodeXML(xmlsimple))
+		}
+		//fmt.Println(listdata)
+		listdata = append(listdata, "</catalog>")
+		result2 := strings.Join(listdata, " ")
+		fmt.Println(result2)
+
+		w.Header().Set("content-type", "application/xml")
+		w.Write([]byte(result2))
 	}
 
 }
@@ -185,8 +218,9 @@ func FileGet(fileName string, w http.ResponseWriter) {
 		fmt.Fprintln(os.Stderr, "Error occurred in opening the file: ", err)
 	}
 	for line := range t.Lines {
+		fmt.Println(line.Text)
 		xmlsimple := util.ProcLineDecodeXML(line.Text)
-		w.Header().Set("content-type", "application/xml")
+		w.Header().Set("content-type", "application/text")
 		w.Write([]byte(util.EncodeXML(xmlsimple)))
 	}
 }

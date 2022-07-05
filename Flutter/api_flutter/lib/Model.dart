@@ -1,9 +1,19 @@
+import 'package:xml/xml.dart';
+
 class File {
   String name;
 
   File({required this.name});
 
   File.fromJson(Map<String, dynamic> sting) : name = sting["Path"];
+}
+
+class Loglist {
+  String log;
+
+  Loglist({required this.log});
+
+  Loglist.fromJSON(Map<String, dynamic> string) : log = string["log"];
 }
 
 /* class Log {
@@ -39,3 +49,26 @@ class File {
   String ext_message;
 }
  */
+
+class Genre {
+  Genre._(this.id, this.title, this.token, this.type, this.subGenres);
+
+  factory Genre.fromElement(XmlElement genreElement) {
+    return Genre._(
+      genreElement.getAttribute('id'),
+      genreElement.getAttribute('title'),
+      genreElement.getAttribute('token'),
+      genreElement.getAttribute('type'),
+      genreElement
+          .findElements('genre')
+          .map<Genre>((e) => Genre.fromElement(e))
+          .toList(),
+    );
+  }
+
+  String id;
+  String title;
+  String token;
+  String type;
+  List<Genre> subGenres;
+}
