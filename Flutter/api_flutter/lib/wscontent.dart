@@ -31,7 +31,7 @@ class initWS extends StatelessWidget {
         ),
         drawer: NavDrawer(),
         body: Container(
-          child: FutureBuilder<List<Loglist>>(
+          child: FutureBuilder<List<Loglist1>>(
             future: fetchFileXml(),
             builder: (BuildContext context, AsyncSnapshot snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
@@ -83,16 +83,16 @@ class initWS extends StatelessWidget {
         ));
   }
 
-  Future<List<Loglist>> fetchFileXml() async {
+  Future<List<Loglist1>> fetchFileXml() async {
     var url = "http://192.168.0.101:5500//data/" + window.btoa(filename.path);
     var response = await http.get(Uri.parse(url));
-    List<Loglist> loglist = [];
+    List<Loglist1> loglist = [];
     if (response.statusCode == 200) {
       var raw = XmlDocument.parse(response.body);
       var elements = raw.findAllElements("loglist");
       for (final item in elements) {
         var item2 = item.toString();
-        loglist.add(Loglist(log: item2));
+        loglist.add(Loglist1(log: item2));
       }
       /*  for (final item in elements) {
         loglist.add(Loglist(item));
