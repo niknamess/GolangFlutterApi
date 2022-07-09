@@ -3,7 +3,7 @@ import 'package:api_flutter/Model.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
 import 'package:path/path.dart';
-import 'package:api_flutter/wscontent.dart';
+import 'package:api_flutter/content.dart';
 import 'package:api_flutter/main.dart';
 
 class Filename {
