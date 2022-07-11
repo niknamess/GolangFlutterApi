@@ -89,7 +89,7 @@ class Loglist1 {
   List<Genre> subGenres;
 }
  */
-class Welcome8 {
+/* class Welcome8 {
   Welcome8({
     required this.catalog,
   });
@@ -112,7 +112,7 @@ class Loglist {
 
   Log log;
 }
-
+ */
 class Log {
   Log({
     required this.moduleName,
@@ -126,13 +126,56 @@ class Log {
     required this.extMessage,
   });
 
-  String moduleName;
-  String appPath;
-  String appPid;
-  String threadId;
-  String time;
-  String ulid;
-  String type;
-  String message;
-  String extMessage;
+  final String moduleName;
+  final String appPath;
+  final String appPid;
+  final String threadId;
+  final String time;
+  final String ulid;
+  final String type;
+  final String message;
+  final String extMessage;
+
+  factory Log.fromJson(Map<String, dynamic> json) {
+    return Log(
+        moduleName: json["author"],
+        appPath: json["title"],
+        appPid: json["description"],
+        threadId: json["url"],
+        time: json["urlToImage"],
+        ulid: json["publishedAt"],
+        type: json["content"],
+        message: json["content"],
+        extMessage: json["content"]);
+  }
 }
+/* 
+class Test {
+  final String name;
+  final String email;
+  final int age;
+  final String income;
+  final String country;
+  final String area;
+
+  const Test({
+    required this.name,
+    required this.email,
+    required this.age,
+    required this.income,
+    required this.country,
+    required this.area,
+  });
+
+  factory Test.fromJson(Map<String, dynamic> json) {
+    return Test(
+      name: json['name'] as String,
+      email: json['email'] as String,
+      age: json['age'] as int,
+      income: json['income'] as String,
+      country: json['country'] as String,
+      area: json['area'] as String,
+    );
+  }
+}
+ */
