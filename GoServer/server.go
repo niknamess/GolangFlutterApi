@@ -168,7 +168,7 @@ func filedata(w http.ResponseWriter, r *http.Request) {
 	if ok {
 		var listdata []string
 
-		listdata = append(listdata, "<?xml version=\"1.0\"?><catalog>")
+		listdata = append(listdata, "<?xml version=\"1.0\" encoding=\"UTF-8\"?><catalog>")
 		fileN := filepath.Base(filename)
 		fmt.Println("Start ", filename)
 		t, err := tail.TailFile("/var/local/logi2/repdata/"+fileN,
