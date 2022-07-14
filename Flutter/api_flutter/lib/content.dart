@@ -9,6 +9,8 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:xml2json/xml2json.dart';
 import 'package:json_table/json_table.dart';
+import 'dart:convert' as convert;
+import 'package:api_flutter/test/xml2json_test_strings.dart';
 
 //import 'package:flutter/material.dart';
 
@@ -93,39 +95,92 @@ class initWS extends StatelessWidget {
     List<String> datalist2 = [];
 
     if (response.statusCode == 200) {
-      //var raw = XmlDocument.parse(response.body);
       Xml2Json xml2json = Xml2Json();
       xml2json.parse(response.body);
-      var json = xml2json.toBadgerfish();
+      var json = xml2json.toGData();
       print('========================================');
-      //print(response.body);
       //print(json);
 
       data1 = jsonDecode(json);
-      //print(data1);
       print('========================================');
       List data2 = data1['catalog']['loglist'];
       final List<String> strs2 = data2.map((e) => e.toString()).toList();
       datalist2 = strs2;
-      //print(datalist2);
 
       print('========================================');
       for (int i = 0; i < data2.length; i++) {
         datalist.add(data2[i]['log']);
-        //print(data2[i]['log']);
+        print(data2[i]['log']);
       }
-      //print(test);
     }
-    //print(datalist);
-    // final List<String> strs = datalist.map((e) => e.toString()).toList();
-    // print(strs);
-    final String jsonObject = datalist2.join(', ');
-    print(jsonObject);
-    print('========================================');
-    JsonEncoder encoder = new JsonEncoder.withIndent('  ');
-    String jsonString = encoder.convert(json.decode(jsonObject));
-    //print(jsonString);
 
-    return jsonString;
+    final String jsonObject = datalist2.join(', ');
+    //print(jsonObject);
+    print('========================================');
+
+    /*  final myTransformer = Xml2Json();
+    final myTransformer2 = Xml2Json();
+
+    // Parse a simple XML string
+
+    myTransformer.parse(goodXmlString);
+    myTransformer2.parse(goodxmlString2);
+
+    print('XML string');
+    print(goodXmlString);
+    print('');
+    print(goodxmlString2);
+    print('');
+
+    // Transform to JSON using Badgerfish
+    var json = myTransformer.toBadgerfish();
+    var json2 = myTransformer2.toBadgerfish();
+
+    print('Badgerfish');
+    print('');
+    print(json);
+    print('');
+    print(json2);
+    print('');
+
+    // Transform to JSON using GData
+    json = myTransformer.toGData();
+    json2 = myTransformer.toGData();
+    print('GData');
+    print('');
+    print(json);
+    print('');
+    print(json2);
+    print('');
+
+    // Transform to JSON using Parker
+    json = myTransformer.toParker();
+    json2 = myTransformer2.toParker();
+    print('Parker');
+    print('');
+    print(json);
+    print('');
+    print(json2);
+    print('');
+
+    // Transform to JSON using ParkerWithAttrs
+    json = myTransformer.toParkerWithAttrs();
+    json2 = myTransformer2.toParkerWithAttrs();
+    print('ParkerWithAttrs');
+    print('');
+    print(json);
+    print('');
+    print(json2);
+    print('');
+
+    // Transform to JSON using ParkerWithAttrs
+    // A node in XML should be an array, but if there is only one element in the array,
+    // it will only be parsed into an object, so we need to specify the node as an array
+    json = myTransformer2.toParkerWithAttrs(array: ['contact']);
+    print('ParkerWithAttrs, specify the node as an array');
+    print('');
+    print(json);
+ */
+    return "";
   }
 }

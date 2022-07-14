@@ -138,15 +138,15 @@ class Log {
 
   factory Log.fromJson(Map<String, dynamic> json) {
     return Log(
-        moduleName: json["author"],
-        appPath: json["title"],
-        appPid: json["description"],
-        threadId: json["url"],
-        time: json["urlToImage"],
-        ulid: json["publishedAt"],
-        type: json["content"],
-        message: json["content"],
-        extMessage: json["content"]);
+        moduleName: json["module_name"],
+        appPath: json["app_path"],
+        appPid: json["app_pid"],
+        threadId: json["thread_id"],
+        time: json["time"],
+        ulid: json["ulid"],
+        type: json["type"],
+        message: json["message"],
+        extMessage: json["extMessage"]);
   }
 }
 /* 
