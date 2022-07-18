@@ -13,34 +13,36 @@ import 'dart:convert' as convert;
 import 'package:api_flutter/test/xml2json_test_strings.dart';
 
 class initWS extends StatefulWidget {
-  initWS({super.key, required this.filename});
   final Filename filename;
 
+  initWS({required this.filename});
+  //final filename filename;
+  print(filename);
+
   _initWSState createState() => _initWSState();
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
 class _initWSState extends State<initWS> {
-  final String hh =
-      '[{"name":"Ram","email":"ram@gmail.com","age":23,"income":"10Rs","country":"India","area":"abc"},{"name":"Shyam","email":"shyam23@gmail.com",'
-      '"age":28,"income":"30Rs","country":"India","area":"abc","day":"Monday","month":"april"},{"name":"John","email":"john@gmail.com","age":33,"income":"15Rs","country":"India",'
-      '"area":"abc","day":"Monday","month":"april"},{"name":"Ram","email":"ram@gmail.com","age":23,"income":"10Rs","country":"India","area":"abc","day":"Monday","month":"april"},'
-      '{"name":"Shyam","email":"shyam23@gmail.com","age":28,"income":"30Rs","country":"India","area":"abc","day":"Monday","month":"april"},{"name":"John","email":"john@gmail.com",'
-      '"age":33,"income":"15Rs","country":"India","area":"abc","day":"Monday","month":"april"},{"name":"Ram","email":"ram@gmail.com","age":23,"income":"10Rs","country":"India",'
-      '"area":"abc","day":"Monday","month":"april"},{"name":"Shyam","email":"shyam23@gmail.com","age":28,"income":"30Rs","country":"India","area":"abc","day":"Monday","month":"april"},'
-      '{"name":"John","email":"john@gmail.com","age":33,"income":"15Rs","country":"India","area":"abc","day":"Monday","month":"april"},{"name":"Ram","email":"ram@gmail.com","age":23,'
-      '"income":"10Rs","country":"India","area":"abc","day":"Monday","month":"april"},{"name":"Shyam","email":"shyam23@gmail.com","age":28,"income":"30Rs","country":"India","area":"abc",'
-      '"day":"Monday","month":"april"},{"name":"John","email":"john@gmail.com","age":33,"income":"15Rs","country":"India","area":"abc","day":"Monday","month":"april"}]';
   final String jsonSample =
-      '[{"module_name": "7TMCS TEST", "app_path": "/3/TEST/TEST", "app_pid": "10103", "thread_id": "0", "time": "582018000147040", "ulid":"01G514D4KMX40AGTW5RSH0NR7R", "type": "3", "message":"Ð¡Ð¾ÑÑÐ¾ÑÐ½Ð¸Ðµ \'110.99.215.211CÐµÑÐ²ÐµÑÐ¡_UDP/Ð¸Ð½Ð³\'", "ext_message": "Context:-- voidtmcs::AbstractMonitor::,Worcestershire"}, '
-      '{"module_name": "7TMCS TEST", "app_path": "/3/TEST/TEST", "app_pid": "10103", "thread_id": "0", "time": "582018000147040", "ulid":"01G514D4KMX40AGTW5RSH0NR7R", "type": "3", "message":"Ð¡Ð¾ÑÑÐ¾ÑÐ½Ð¸Ðµ \'110.99.215.211CÐµÑÐ²ÐµÑÐ¡_UDP/Ð¸Ð½Ð³\'", "ext_message": "Context:  -- voidtmcs::AbstractMonitor::,Worcestershire"}]';
+      '[{"module_name": "7TMCS TEST", "app_path": "/3/TEST/TEST", "app_pid": "10103", "thread_id": 0, "time": 582018000147040, "ulid":"01G514D4KMX40AGTW5RSH0NR7R", "type": "3", "message":"Ð¡Ð¾ÑÑÐ¾ÑÐ½Ð¸Ðµ \'110.99.215.211CÐµÑÐ²ÐµÑÐ¡_UDP/Ð¸Ð½Ð³\'", "ext_message": "Context:-- voidtmcs::AbstractMonitor::,Worcestershire"}, '
+      '{"module_name": "7TMCS TEST", "app_path": "/3/TEST/TEST", "app_pid": "10106", "thread_id": 2, "time": 582018000149040, "ulid":"01G514D4KMX40AGTW5RSH0NR7R", "type": "3", "message":"Ð¡Ð¾ÑÑÐ¾ÑÐ½Ð¸Ðµ \'110.99.215.211CÐµÑÐ²ÐµÑÐ¡_UDP/Ð¸Ð½Ð³\'", "ext_message": "Context:  -- voidtmcs::AbstractMonitor::,Worcestershire"}]';
 
   bool toggle = true;
 
   @override
   Widget build(BuildContext context) {
+    dynamic filename = widget.filename;
+    // print("filename");
+
+    //print(filename.path);
+    //  var filename;
     var json = jsonDecode(jsonSample);
-    print(jsonSample);
-    print(json);
+    var truejson;
+    // print(jsonSample);
+    // print(json);
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -49,6 +51,31 @@ class _initWSState extends State<initWS> {
           child: toggle
               ? Column(
                   children: [
+                    FutureBuilder<dynamic>(
+                        future: getXMLData(filename),
+                        builder: (BuildContext context,
+                            AsyncSnapshot<dynamic> snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          }
+
+                          if (snapshot.hasError) {
+                            return Center(
+                              child: Text("${snapshot.error}",
+                                  style: TextStyle(color: Colors.redAccent)),
+                            );
+                          }
+
+                          if (snapshot.hasData) {
+                            truejson = snapshot.data;
+
+                            //return snapshot.data;
+                          }
+                          return new CircularProgressIndicator();
+                        }),
                     JsonTable(
                       json,
                       showColumnToggle: true,
@@ -89,8 +116,8 @@ class _initWSState extends State<initWS> {
     return jsonString;
   } //Ready json data
 
-  Future<dynamic> getXMLData() async {
-    var filename;
+  Future<dynamic> getXMLData(filename) async {
+    //var filename;
     var url = "http://192.168.0.101:5500//data/" + window.btoa(filename.path);
     var response = await http.get(Uri.parse(url));
     var data1;
@@ -146,9 +173,9 @@ class _initWSState extends State<initWS> {
     //JsonEncoder encoder = new JsonEncoder.withIndent('  ');
     //String jsonString = encoder.convert(json.decode(jsonFinalString));
 
-    return datalistdy;
+    return json;
   }
 
-  @override
-  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+  /* @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation); */
 }
