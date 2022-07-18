@@ -12,114 +12,143 @@ import 'package:json_table/json_table.dart';
 import 'dart:convert' as convert;
 import 'package:api_flutter/test/xml2json_test_strings.dart';
 
-//import 'package:flutter/material.dart';
-
-//import 'package:web_socket_channel/io.dart';
-//import 'package:web_socket_channel/status.dart' as status;
-
-class initWS extends StatelessWidget {
-  static const String routeName = '/initws';
+class initWS extends StatefulWidget {
   initWS({super.key, required this.filename});
   final Filename filename;
-  //var url = "http://192.168.0.101:5500//data/" + window.btoa(filename.path);
+
+  _initWSState createState() => _initWSState();
+}
+
+class _initWSState extends State<initWS> {
+  final String hh =
+      '[{"name":"Ram","email":"ram@gmail.com","age":23,"income":"10Rs","country":"India","area":"abc"},{"name":"Shyam","email":"shyam23@gmail.com",'
+      '"age":28,"income":"30Rs","country":"India","area":"abc","day":"Monday","month":"april"},{"name":"John","email":"john@gmail.com","age":33,"income":"15Rs","country":"India",'
+      '"area":"abc","day":"Monday","month":"april"},{"name":"Ram","email":"ram@gmail.com","age":23,"income":"10Rs","country":"India","area":"abc","day":"Monday","month":"april"},'
+      '{"name":"Shyam","email":"shyam23@gmail.com","age":28,"income":"30Rs","country":"India","area":"abc","day":"Monday","month":"april"},{"name":"John","email":"john@gmail.com",'
+      '"age":33,"income":"15Rs","country":"India","area":"abc","day":"Monday","month":"april"},{"name":"Ram","email":"ram@gmail.com","age":23,"income":"10Rs","country":"India",'
+      '"area":"abc","day":"Monday","month":"april"},{"name":"Shyam","email":"shyam23@gmail.com","age":28,"income":"30Rs","country":"India","area":"abc","day":"Monday","month":"april"},'
+      '{"name":"John","email":"john@gmail.com","age":33,"income":"15Rs","country":"India","area":"abc","day":"Monday","month":"april"},{"name":"Ram","email":"ram@gmail.com","age":23,'
+      '"income":"10Rs","country":"India","area":"abc","day":"Monday","month":"april"},{"name":"Shyam","email":"shyam23@gmail.com","age":28,"income":"30Rs","country":"India","area":"abc",'
+      '"day":"Monday","month":"april"},{"name":"John","email":"john@gmail.com","age":33,"income":"15Rs","country":"India","area":"abc","day":"Monday","month":"april"}]';
+  final String jsonSample =
+      '[{"module_name": "7TMCS TEST", "app_path": "/3/TEST/TEST", "app_pid": "10103", "thread_id": "0", "time": "582018000147040", "ulid":"01G514D4KMX40AGTW5RSH0NR7R", "type": "3", "message":"Ð¡Ð¾ÑÑÐ¾ÑÐ½Ð¸Ðµ \'110.99.215.211CÐµÑÐ²ÐµÑÐ¡_UDP/Ð¸Ð½Ð³\'", "ext_message": "Context:-- voidtmcs::AbstractMonitor::,Worcestershire"}, '
+      '{"module_name": "7TMCS TEST", "app_path": "/3/TEST/TEST", "app_pid": "10103", "thread_id": "0", "time": "582018000147040", "ulid":"01G514D4KMX40AGTW5RSH0NR7R", "type": "3", "message":"Ð¡Ð¾ÑÑÐ¾ÑÐ½Ð¸Ðµ \'110.99.215.211CÐµÑÐ²ÐµÑÐ¡_UDP/Ð¸Ð½Ð³\'", "ext_message": "Context:  -- voidtmcs::AbstractMonitor::,Worcestershire"}]';
+
   bool toggle = true;
-  //final Filename snapshot;
+
   @override
   Widget build(BuildContext context) {
-    // var url = "http://192.168.0.101:5500//data/" + window.btoa(filename.path);
-    //final filename = ModalRoute.of(context)!.settings.arguments as Todo;
+    var json = jsonDecode(jsonSample);
+    print(jsonSample);
+    print(json);
 
-    return new Scaffold(
-        appBar: AppBar(
-          title: Text(basename(filename.path)),
+    return Scaffold(
+      body: SingleChildScrollView(
+        padding: EdgeInsets.all(16.0),
+        child: Container(
+          child: toggle
+              ? Column(
+                  children: [
+                    JsonTable(
+                      json,
+                      showColumnToggle: true,
+                      allowRowHighlight: true,
+                      rowHighlightColor: Colors.yellow[500]!.withOpacity(0.7),
+                      paginationRowCount: 4,
+                      onRowSelect: (index, map) {
+                        print(index);
+                        print(map);
+                      },
+                    ),
+                    SizedBox(
+                      height: 40.0,
+                    ),
+                    Text("Simple table which creates table direclty from json")
+                  ],
+                )
+              : Center(
+                  child: Text(getPrettyJSONString(jsonSample)),
+                ),
         ),
-        body: SingleChildScrollView(
-            padding: EdgeInsets.all(16.0),
-            child: Container(
-              child: Center(
-                  child: FutureBuilder<String>(
-                future: getXMLData(),
-                builder: (BuildContext context, AsyncSnapshot snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  }
-
-                  if (snapshot.hasError) {
-                    return Center(
-                      child: Text("${snapshot.error}",
-                          style: TextStyle(color: Colors.redAccent)),
-                    );
-                  }
-
-                  if (snapshot.hasData) {
-                    return Column(children: [
-                      JsonTable(
-                        snapshot.data,
-                        showColumnToggle: true,
-                        allowRowHighlight: true,
-                        rowHighlightColor: Colors.yellow[500]!.withOpacity(0.7),
-                        paginationRowCount: 4,
-                        onRowSelect: (index, map) {
-                          print(index);
-                          print(map);
-                        },
-                      ),
-                      SizedBox(
-                        height: 40.0,
-                      ),
-                      Text(
-                          "Simple table which creates table direclty from json")
-                    ]);
-                  }
-                  return new CircularProgressIndicator();
-                },
-              )
-                  //Text(getXMLData()),
-                  ),
-
-              /* Text("This is initWS page" +
-              filename.path +
-              "   " +
-              window.btoa(filename.path)), */
-            )));
+      ),
+      floatingActionButton: FloatingActionButton(
+          child: Icon(Icons.grid_on),
+          onPressed: () {
+            setState(
+              () {
+                toggle = !toggle;
+              },
+            );
+          }),
+    );
   }
 
-  Future<String> getXMLData() async {
+  String getPrettyJSONString(jsonObject) {
+    JsonEncoder encoder = new JsonEncoder.withIndent('  ');
+    String jsonString = encoder.convert(json.decode(jsonObject));
+    return jsonString;
+  } //Ready json data
+
+  Future<dynamic> getXMLData() async {
+    var filename;
     var url = "http://192.168.0.101:5500//data/" + window.btoa(filename.path);
     var response = await http.get(Uri.parse(url));
     var data1;
-    List<dynamic> datalistdy = [];
+    dynamic datalistdy = [];
 
     if (response.statusCode == 200) {
       Xml2Json xml2json = Xml2Json();
       xml2json.parse(response.body);
       var json = xml2json.toGData();
+      // print(json);
       data1 = jsonDecode(json);
-      List data2 = data1['catalog']['loglist'];
+      dynamic data2 = data1['catalog']['loglist'];
       print('========================================');
       for (int i = 0; i < data2.length; i++) {
         datalistdy.add(data2[i]['log']);
-        print(data2[i]['log']);
+        //print(data2[i]['log']);
       }
     }
-
+    //print(datalistdy);
     final List<String> dataliststr =
         datalistdy.map((e) => e.toString()).toList();
-    for (int i = 0; i < dataliststr.length; i++) {
-      if (dataliststr[i] == 'null') {
-        print('================null========================');
-        dataliststr.removeAt(i);
+    //delete null
+    for (int i = 0; i < 10; i++) {
+      for (int i = 0; i < dataliststr.length; i++) {
+        if (dataliststr[i] == 'null') {
+          //print(dataliststr.length);
+
+          print('================null========================');
+          //print(dataliststr[i]);
+          //print(i);
+
+          bool result = dataliststr.remove('null');
+          print(result); // true
+          //print(dataliststr.length);
+        }
       }
     }
 
     final String jsonObject = dataliststr.join(', ');
     var jsonFinalString =
         "[" + jsonObject.substring(0, jsonObject.length) + "]";
+    //print(jsonFinalString);
+
     print(jsonFinalString.substring(0, 30));
+
+    print(jsonFinalString.substring(
+        jsonFinalString.length - 20, jsonFinalString.length));
+
     print('========================================');
-    var json = jsonDecode(jsonFinalString);
-    return json;
+    final dynamic jsonFinaldynamic = jsonFinalString;
+    //formating
+    //var json = jsonDecode(jsonFinalString);
+    //JsonEncoder encoder = new JsonEncoder.withIndent('  ');
+    //String jsonString = encoder.convert(json.decode(jsonFinalString));
+
+    return datalistdy;
   }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
