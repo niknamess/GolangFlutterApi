@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Logi2 Demo',
       theme: ThemeData(
-        primarySwatch: Colors.green,
+        primarySwatch: Colors.orange,
       ),
       debugShowCheckedModeBanner: false,
       initialRoute: '/',
@@ -44,7 +44,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text("Flutter Learning"),
+          title: Text("Flutter Logi2 Demo"),
         ),
         body: Center(child: Center(child: Text("This is Home page"))),
         drawer: NavDrawer());
