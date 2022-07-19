@@ -2,11 +2,14 @@
 
 import 'package:flutter/material.dart';
 import 'package:api_flutter/NavDrawer.dart';
+import 'package:api_flutter/Model.dart';
+
 import 'dart:html';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:xml2json/xml2json.dart';
 import 'package:json_table/json_table.dart';
+import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
 class initWS extends StatefulWidget {
   final Filename filename;
@@ -87,6 +90,78 @@ class _initWSState extends State<initWS> {
             );
           }),
     );
+
+    List<GridColumn> getColumns() {
+      return <GridColumn>[
+        GridTextColumn(
+            columnName: 'module_name',
+            width: 70,
+            label: Container(
+                padding: EdgeInsets.all(8),
+                alignment: Alignment.centerLeft,
+                child: Text('module_name',
+                    overflow: TextOverflow.clip, softWrap: true))),
+        GridTextColumn(
+            columnName: 'app_path',
+            width: 100,
+            label: Container(
+                padding: EdgeInsets.all(8),
+                alignment: Alignment.centerRight,
+                child: Text('app_path',
+                    overflow: TextOverflow.clip, softWrap: true))),
+        GridTextColumn(
+            columnName: 'app_pid',
+            width: 100,
+            label: Container(
+                padding: EdgeInsets.all(8),
+                alignment: Alignment.centerLeft,
+                child: Text('app_pid',
+                    overflow: TextOverflow.clip, softWrap: true))),
+        GridTextColumn(
+            columnName: 'thread_id',
+            width: 95,
+            label: Container(
+                padding: EdgeInsets.all(8),
+                alignment: Alignment.centerRight,
+                child: Text('thread_id',
+                    overflow: TextOverflow.clip, softWrap: true))),
+        GridTextColumn(
+            columnName: 'time',
+            width: 65,
+            label: Container(
+                padding: EdgeInsets.all(8),
+                alignment: Alignment.centerLeft,
+                child: Text('time'))),
+        GridTextColumn(
+            columnName: 'ulid',
+            width: 65,
+            label: Container(
+                padding: EdgeInsets.all(8),
+                alignment: Alignment.centerLeft,
+                child: Text('ulid'))),
+        GridTextColumn(
+            columnName: 'type',
+            width: 65,
+            label: Container(
+                padding: EdgeInsets.all(8),
+                alignment: Alignment.centerLeft,
+                child: Text('type'))),
+        GridTextColumn(
+            columnName: 'message',
+            width: 65,
+            label: Container(
+                padding: EdgeInsets.all(8),
+                alignment: Alignment.centerLeft,
+                child: Text('message'))),
+        GridTextColumn(
+            columnName: 'ext_message',
+            width: 65,
+            label: Container(
+                padding: EdgeInsets.all(8),
+                alignment: Alignment.centerLeft,
+                child: Text('extMessage'))),
+      ];
+    }
   }
 
   dynamic getPrettyJSONString(jsonObject) {
@@ -114,5 +189,76 @@ class _initWSState extends State<initWS> {
     }
     var test = jsonEncode(datalistdy);
     return test;
+  }
+}
+
+class ProductDataGridSource extends DataGridSource {
+  ProductDataGridSource(this.loglist) {
+    buildDataGridRow();
+  }
+  late List<DataGridRow> dataGridRows;
+  late List<Log> loglist;
+
+  @override
+  DataGridRowAdapter? buildRow(DataGridRow row) {
+    return DataGridRowAdapter(cells: [
+      Container(
+        child: Text(
+          row.getCells()[0].value.toString(),
+          overflow: TextOverflow.ellipsis,
+        ),
+        alignment: Alignment.centerLeft,
+        padding: EdgeInsets.all(8.0),
+      ),
+      Container(
+        alignment: Alignment.centerLeft,
+        padding: EdgeInsets.all(8.0),
+        child: Text(
+          row.getCells()[1].value,
+          overflow: TextOverflow.ellipsis,
+        ),
+      ),
+      Container(
+        alignment: Alignment.centerRight,
+        padding: EdgeInsets.all(8.0),
+        child: Text(
+          row.getCells()[2].value.toString(),
+          overflow: TextOverflow.ellipsis,
+        ),
+      ),
+      Container(
+        alignment: Alignment.centerRight,
+        padding: EdgeInsets.all(8.0),
+        child: Text(
+          DateFormat('MM/dd/yyyy').format(row.getCells()[3].value).toString(),
+          overflow: TextOverflow.ellipsis,
+        ),
+      ),
+      Container(
+          alignment: Alignment.centerRight,
+          padding: EdgeInsets.all(8.0),
+          child: Text(
+            row.getCells()[4].value.toStringAsFixed(1),
+            overflow: TextOverflow.ellipsis,
+          ))
+    ]);
+  }
+
+  @override
+  List<DataGridRow> get rows => dataGridRows;
+
+  void buildDataGridRow() {
+    dataGridRows = productList.map<DataGridRow>((dataGridRow) {
+      return DataGridRow(cells: [
+        DataGridCell(columnName: 'orderID', value: dataGridRow.orderID),
+        DataGridCell<String>(
+            columnName: 'customerID', value: dataGridRow.customerID),
+        DataGridCell<int>(
+            columnName: 'employeeID', value: dataGridRow.employeeID),
+        DataGridCell<DateTime>(
+            columnName: 'orderDate', value: dataGridRow.orderDate),
+        DataGridCell<double>(columnName: 'freight', value: dataGridRow.freight)
+      ]);
+    }).toList(growable: false);
   }
 }

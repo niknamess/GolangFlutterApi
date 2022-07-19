@@ -43,7 +43,7 @@ class Log {
         ulid: json["ulid"],
         type: json["type"],
         message: json["message"],
-        extMessage: json["extMessage"]);
+        extMessage: json["ext_message"]);
   }
   Log({
     required this.moduleName,
