@@ -36,6 +36,8 @@ dependencies:
   web_socket_channel: ^2.2.0
   xml2json: ^5.3.3
   test: ^1.21.1
+  pluto_grid: ^5.0.4
+  syncfusion_flutter_datagrid: ^20.2.39
 
 dev_dependencies:
   flutter_test:
