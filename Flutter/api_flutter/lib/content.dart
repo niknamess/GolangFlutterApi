@@ -33,144 +33,111 @@ class _initWSState extends State<initWS> {
 
     String truejson;
 
-    return Scaffold(
+    return SafeArea(
+        child: Scaffold(
       appBar: AppBar(
         title: Text(filename.path),
       ),
-      body: FutureBuilder<String>(
-          future: getXMLData(filename),
-          builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(
-                child: CircularProgressIndicator(),
-              );
-            }
-
-            if (snapshot.hasError) {
-              return Center(
-                child: Text("${snapshot.error}",
-                    style: TextStyle(color: Colors.redAccent)),
-              );
-            }
-
-            if (snapshot.hasData) {
-              truejson = snapshot.data;
-              var json1 = jsonDecode(truejson);
-
-              return Column(
-                children: [
-                  JsonTable(
-                    json1,
-                    showColumnToggle: true,
-                    allowRowHighlight: true,
-                    rowHighlightColor: Colors.yellow[500]!.withOpacity(0.7),
-                    paginationRowCount: 20,
-                    onRowSelect: (index, map) {
-                      //print(index);
-                      //print(map);
-                    },
+      body: FutureBuilder(
+        future: getLogDataSource(filename),
+        builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+          return snapshot.hasData
+              ? SfDataGrid(source: snapshot.data, columns: getColumns())
+              : Center(
+                  child: CircularProgressIndicator(
+                    strokeWidth: 3,
                   ),
-                  SizedBox(
-                    height: 40.0,
-                  ),
-                  Text("Created by me")
-                ],
-              );
-            }
-
-            return new CircularProgressIndicator();
-          }),
-      floatingActionButton: FloatingActionButton(
-          child: Icon(Icons.grid_on),
-          onPressed: () {
-            setState(
-              () {
-                toggle = !toggle;
-              },
-            );
-          }),
-    );
-
-    List<GridColumn> getColumns() {
-      return <GridColumn>[
-        GridTextColumn(
-            columnName: 'module_name',
-            width: 70,
-            label: Container(
-                padding: EdgeInsets.all(8),
-                alignment: Alignment.centerLeft,
-                child: Text('module_name',
-                    overflow: TextOverflow.clip, softWrap: true))),
-        GridTextColumn(
-            columnName: 'app_path',
-            width: 100,
-            label: Container(
-                padding: EdgeInsets.all(8),
-                alignment: Alignment.centerRight,
-                child: Text('app_path',
-                    overflow: TextOverflow.clip, softWrap: true))),
-        GridTextColumn(
-            columnName: 'app_pid',
-            width: 100,
-            label: Container(
-                padding: EdgeInsets.all(8),
-                alignment: Alignment.centerLeft,
-                child: Text('app_pid',
-                    overflow: TextOverflow.clip, softWrap: true))),
-        GridTextColumn(
-            columnName: 'thread_id',
-            width: 95,
-            label: Container(
-                padding: EdgeInsets.all(8),
-                alignment: Alignment.centerRight,
-                child: Text('thread_id',
-                    overflow: TextOverflow.clip, softWrap: true))),
-        GridTextColumn(
-            columnName: 'time',
-            width: 65,
-            label: Container(
-                padding: EdgeInsets.all(8),
-                alignment: Alignment.centerLeft,
-                child: Text('time'))),
-        GridTextColumn(
-            columnName: 'ulid',
-            width: 65,
-            label: Container(
-                padding: EdgeInsets.all(8),
-                alignment: Alignment.centerLeft,
-                child: Text('ulid'))),
-        GridTextColumn(
-            columnName: 'type',
-            width: 65,
-            label: Container(
-                padding: EdgeInsets.all(8),
-                alignment: Alignment.centerLeft,
-                child: Text('type'))),
-        GridTextColumn(
-            columnName: 'message',
-            width: 65,
-            label: Container(
-                padding: EdgeInsets.all(8),
-                alignment: Alignment.centerLeft,
-                child: Text('message'))),
-        GridTextColumn(
-            columnName: 'ext_message',
-            width: 65,
-            label: Container(
-                padding: EdgeInsets.all(8),
-                alignment: Alignment.centerLeft,
-                child: Text('extMessage'))),
-      ];
-    }
+                );
+        },
+      ),
+    ));
   }
 
-  dynamic getPrettyJSONString(jsonObject) {
-    JsonEncoder encoder = new JsonEncoder.withIndent('  ');
-    String jsonString = encoder.convert(json.decode(jsonObject));
-    return jsonString;
-  } //Ready json data
+  Future<LogDataGridSource> getLogDataSource(filename) async {
+    var logList = await generateLogList(filename);
+    return LogDataGridSource(logList);
+  }
 
-  Future<String> getXMLData(filename) async {
+  List<GridColumn> getColumns() {
+    return <GridColumn>[
+      GridTextColumn(
+          columnName: 'module_name',
+          width: 70,
+          label: Container(
+              padding: EdgeInsets.all(8),
+              alignment: Alignment.centerLeft,
+              child: Text('module_name',
+                  overflow: TextOverflow.clip, softWrap: true))),
+      GridTextColumn(
+          columnName: 'app_path',
+          width: 100,
+          label: Container(
+              padding: EdgeInsets.all(8),
+              alignment: Alignment.centerRight,
+              child: Text('app_path',
+                  overflow: TextOverflow.clip, softWrap: true))),
+      GridTextColumn(
+          columnName: 'app_pid',
+          width: 100,
+          label: Container(
+              padding: EdgeInsets.all(8),
+              alignment: Alignment.centerLeft,
+              child: Text('app_pid',
+                  overflow: TextOverflow.clip, softWrap: true))),
+      GridTextColumn(
+          columnName: 'thread_id',
+          width: 95,
+          label: Container(
+              padding: EdgeInsets.all(8),
+              alignment: Alignment.centerRight,
+              child: Text('thread_id',
+                  overflow: TextOverflow.clip, softWrap: true))),
+      GridTextColumn(
+          columnName: 'time',
+          width: 65,
+          label: Container(
+              padding: EdgeInsets.all(8),
+              alignment: Alignment.centerLeft,
+              child: Text('time'))),
+      GridTextColumn(
+          columnName: 'ulid',
+          width: 65,
+          label: Container(
+              padding: EdgeInsets.all(8),
+              alignment: Alignment.centerLeft,
+              child: Text('ulid'))),
+      GridTextColumn(
+          columnName: 'type',
+          width: 65,
+          label: Container(
+              padding: EdgeInsets.all(8),
+              alignment: Alignment.centerLeft,
+              child: Text('type'))),
+      GridTextColumn(
+          columnName: 'message',
+          width: 65,
+          label: Container(
+              padding: EdgeInsets.all(8),
+              alignment: Alignment.centerLeft,
+              child: Text('message'))),
+      GridTextColumn(
+          columnName: 'ext_message',
+          width: 65,
+          label: Container(
+              padding: EdgeInsets.all(8),
+              alignment: Alignment.centerLeft,
+              child: Text('extMessage'))),
+    ];
+  }
+}
+
+dynamic getPrettyJSONString(jsonObject) {
+  JsonEncoder encoder = new JsonEncoder.withIndent('  ');
+  String jsonString = encoder.convert(json.decode(jsonObject));
+  return jsonString;
+} //Ready json data
+
+/*   Future<String> getXMLData(filename) async {
     var url = "http://192.168.0.101:5500//data/" + window.btoa(filename.path);
     var response = await http.get(Uri.parse(url));
     var data1;
@@ -189,15 +156,37 @@ class _initWSState extends State<initWS> {
     }
     var test = jsonEncode(datalistdy);
     return test;
+  } */
+Future<List<Log>> generateLogList(filename) async {
+  var url = "http://192.168.0.101:5500//data/" + window.btoa(filename.path);
+  var response = await http.get(Uri.parse(url));
+  var data1;
+  dynamic datalistdy = [];
+
+  if (response.statusCode == 200) {
+    Xml2Json xml2json = Xml2Json();
+    xml2json.parse(response.body);
+    var json = xml2json.toGData();
+    data1 = jsonDecode(json);
+    dynamic data2 = data1['catalog']['loglist'];
+    for (int i = 0; i < data2.length; i++) {
+      data2.removeWhere((e) => e['log'] == null);
+      datalistdy.add(data2[i]['log']);
+    }
   }
+  var test = jsonEncode(datalistdy);
+  var decodedLogs = json.decode(test).cast<Map<String, dynamic>>();
+  List<Log> logList =
+      await decodedLogs.map<Log>((json) => Log.fromJson(json)).toList();
+  return logList;
 }
 
-class ProductDataGridSource extends DataGridSource {
-  ProductDataGridSource(this.loglist) {
+class LogDataGridSource extends DataGridSource {
+  LogDataGridSource(this.logList) {
     buildDataGridRow();
   }
   late List<DataGridRow> dataGridRows;
-  late List<Log> loglist;
+  late List<Log> logList;
 
   @override
   DataGridRowAdapter? buildRow(DataGridRow row) {
@@ -214,7 +203,7 @@ class ProductDataGridSource extends DataGridSource {
         alignment: Alignment.centerLeft,
         padding: EdgeInsets.all(8.0),
         child: Text(
-          row.getCells()[1].value,
+          row.getCells()[1].value.toString(),
           overflow: TextOverflow.ellipsis,
         ),
       ),
@@ -230,7 +219,7 @@ class ProductDataGridSource extends DataGridSource {
         alignment: Alignment.centerRight,
         padding: EdgeInsets.all(8.0),
         child: Text(
-          DateFormat('MM/dd/yyyy').format(row.getCells()[3].value).toString(),
+          row.getCells()[3].value.toString(),
           overflow: TextOverflow.ellipsis,
         ),
       ),
@@ -238,9 +227,41 @@ class ProductDataGridSource extends DataGridSource {
           alignment: Alignment.centerRight,
           padding: EdgeInsets.all(8.0),
           child: Text(
-            row.getCells()[4].value.toStringAsFixed(1),
+            row.getCells()[4].value.toString(),
             overflow: TextOverflow.ellipsis,
-          ))
+          )),
+      Container(
+        alignment: Alignment.centerRight,
+        padding: EdgeInsets.all(8.0),
+        child: Text(
+          row.getCells()[5].value.toString(),
+          overflow: TextOverflow.ellipsis,
+        ),
+      ),
+      Container(
+        alignment: Alignment.centerRight,
+        padding: EdgeInsets.all(8.0),
+        child: Text(
+          row.getCells()[6].value.toString(),
+          overflow: TextOverflow.ellipsis,
+        ),
+      ),
+      Container(
+        alignment: Alignment.centerRight,
+        padding: EdgeInsets.all(8.0),
+        child: Text(
+          row.getCells()[7].value.toString(),
+          overflow: TextOverflow.ellipsis,
+        ),
+      ),
+      Container(
+        alignment: Alignment.centerRight,
+        padding: EdgeInsets.all(8.0),
+        child: Text(
+          row.getCells()[8].value.toString(),
+          overflow: TextOverflow.ellipsis,
+        ),
+      )
     ]);
   }
 
@@ -248,16 +269,17 @@ class ProductDataGridSource extends DataGridSource {
   List<DataGridRow> get rows => dataGridRows;
 
   void buildDataGridRow() {
-    dataGridRows = productList.map<DataGridRow>((dataGridRow) {
+    dataGridRows = logList.map<DataGridRow>((dataGridRow) {
       return DataGridRow(cells: [
-        DataGridCell(columnName: 'orderID', value: dataGridRow.orderID),
-        DataGridCell<String>(
-            columnName: 'customerID', value: dataGridRow.customerID),
-        DataGridCell<int>(
-            columnName: 'employeeID', value: dataGridRow.employeeID),
-        DataGridCell<DateTime>(
-            columnName: 'orderDate', value: dataGridRow.orderDate),
-        DataGridCell<double>(columnName: 'freight', value: dataGridRow.freight)
+        DataGridCell(columnName: 'moduleName', value: dataGridRow.moduleName),
+        DataGridCell<String>(columnName: 'appPath', value: dataGridRow.appPath),
+        DataGridCell<String>(columnName: 'appPid', value: dataGridRow.appPid),
+        DataGridCell<String>(columnName: 'thread', value: dataGridRow.threadId),
+        DataGridCell<String>(columnName: 'time', value: dataGridRow.time),
+        DataGridCell<String>(columnName: 'ulid', value: dataGridRow.ulid),
+        DataGridCell<String>(columnName: 'type', value: dataGridRow.type),
+        DataGridCell<String>(columnName: 'message', value: dataGridRow.message),
+        DataGridCell<String>(columnName: 'extM', value: dataGridRow.extMessage),
       ]);
     }).toList(growable: false);
   }
