@@ -38,6 +38,7 @@ dependencies:
   test: ^1.21.1
   pluto_grid: ^5.0.4
   syncfusion_flutter_datagrid: ^20.2.39
+  syncfusion_flutter_core: ^20.2.39
 
 dev_dependencies:
   flutter_test:

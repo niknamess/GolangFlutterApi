@@ -11,13 +11,9 @@ class File {
 
 class Loglist1 {
   final String log;
-
   Loglist1({required this.log});
-
   static Loglist1 fromXml(xml.XmlElement xmlNode) {
-    //var log = xmlNode.findAllElements('id').single.getAttribute('im:id');
     var log = xmlNode.findAllElements('log').single.text;
-
     return Loglist1(
       log: log,
     );
