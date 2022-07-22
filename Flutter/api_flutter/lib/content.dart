@@ -511,10 +511,10 @@ class LogDataSource extends DataGridSource {
     buildDataGridRows();
   }
 
-  List<DataGridRow> _employeeData = [];
+  List<DataGridRow> _logData = [];
 
   @override
-  List<DataGridRow> get rows => _employeeData;
+  List<DataGridRow> get rows => _logData;
 
   @override
   Future<bool> handlePageChange(int oldPageIndex, int newPageIndex) async {
@@ -535,32 +535,128 @@ class LogDataSource extends DataGridSource {
     return true;
   }
 
-  void buildDataGridRows() {
-    _employeeData = paginatedDataSource
-        .map<DataGridRow>((e) => DataGridRow(cells: [
-              DataGridCell<String>(columnName: 'type', value: e.type),
-              DataGridCell(columnName: 'moduleName', value: e.moduleName),
-              DataGridCell<String>(columnName: 'appPath', value: e.appPath),
-              DataGridCell<String>(columnName: 'appPid', value: e.appPid),
-              DataGridCell<String>(columnName: 'thread', value: e.threadId),
-              DataGridCell<String>(columnName: 'time', value: e.time),
-              DataGridCell<String>(columnName: 'ulid', value: e.ulid),
-              //DataGridCell<String>(columnName: 'type', value: dataGridRow.type),
-              DataGridCell<String>(columnName: 'message', value: e.message),
-              DataGridCell<String>(columnName: 'extM', value: e.extMessage),
-            ]))
-        .toList();
+  @override
+  List<DataGridRow> get rows => dataGridRows;
+
+  void buildDataGridRow() {
+    dataGridRows = logList.map<DataGridRow>((dataGridRow) {
+      return DataGridRow(cells: [
+        DataGridCell<String>(columnName: 'type', value: dataGridRow.type),
+        DataGridCell(columnName: 'moduleName', value: dataGridRow.moduleName),
+        DataGridCell<String>(columnName: 'appPath', value: dataGridRow.appPath),
+        DataGridCell<String>(columnName: 'appPid', value: dataGridRow.appPid),
+        DataGridCell<String>(columnName: 'thread', value: dataGridRow.threadId),
+        DataGridCell<String>(columnName: 'time', value: dataGridRow.time),
+        DataGridCell<String>(columnName: 'ulid', value: dataGridRow.ulid),
+        //DataGridCell<String>(columnName: 'type', value: dataGridRow.type),
+        DataGridCell<String>(columnName: 'message', value: dataGridRow.message),
+        DataGridCell<String>(columnName: 'extM', value: dataGridRow.extMessage),
+      ]);
+    }).toList(growable: false);
   }
 
   @override
   DataGridRowAdapter buildRow(DataGridRow row) {
-    return DataGridRowAdapter(
-        cells: row.getCells().map<Widget>((e) {
-      return Container(
-        alignment: Alignment.center,
-        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-        child: Text(e.value.toString()),
-      );
-    }).toList());
+    var number = int.parse(row.getCells()[0].value.toString());
+    var Typestr;
+    Color? color;
+    switch (number) {
+      // The switch statement must be told to exit, or it will execute every case.
+      case 0:
+        Typestr = "INFO";
+        color = Color.fromRGBO(180, 252, 181, 1);
+        break;
+      case 1:
+        Typestr = "DEBUG";
+        color = Color.fromRGBO(160, 160, 160, 1);
+        break;
+      case 2:
+        Typestr = "WARNING";
+        color = Color.fromRGBO(255, 252, 155, 1);
+        break;
+      case 3:
+        Typestr = "ERROR";
+        color = Color.fromRGBO(253, 177, 177, 1);
+        break;
+      case 4:
+        Typestr = "FATAL";
+        color = Color.fromARGB(255, 229, 88, 17);
+
+        break;
+    }
+    return DataGridRowAdapter(color: color, cells: [
+      Container(
+        child: Text(
+          // style: TextStyle(color: Color.fromRGBO(180, 252, 181, 1)),
+          " Typestr",
+          overflow: TextOverflow.ellipsis,
+        ),
+        alignment: Alignment.centerLeft,
+        padding: EdgeInsets.all(8.0),
+      ),
+      Container(
+        alignment: Alignment.centerLeft,
+        padding: EdgeInsets.all(8.0),
+        child: Text(
+          row.getCells()[1].value.toString(),
+          overflow: TextOverflow.ellipsis,
+        ),
+      ),
+      Container(
+        alignment: Alignment.centerLeft,
+        padding: EdgeInsets.all(8.0),
+        child: Text(
+          row.getCells()[2].value.toString(),
+          overflow: TextOverflow.ellipsis,
+        ),
+      ),
+      Container(
+        alignment: Alignment.centerLeft,
+        padding: EdgeInsets.all(8.0),
+        child: Text(
+          row.getCells()[3].value.toString(),
+          overflow: TextOverflow.ellipsis,
+        ),
+      ),
+      Container(
+          alignment: Alignment.centerLeft,
+          padding: EdgeInsets.all(8.0),
+          child: Text(
+            row.getCells()[4].value.toString(),
+            overflow: TextOverflow.ellipsis,
+          )),
+      Container(
+        alignment: Alignment.centerLeft,
+        padding: EdgeInsets.all(8.0),
+        child: Text(
+          row.getCells()[5].value.toString(),
+          overflow: TextOverflow.ellipsis,
+        ),
+      ),
+      Container(
+        alignment: Alignment.centerLeft,
+        padding: EdgeInsets.all(8.0),
+        child: Text(
+          row.getCells()[6].value.toString(),
+          overflow: TextOverflow.ellipsis,
+        ),
+      ),
+      Container(
+        alignment: Alignment.centerLeft,
+        padding: EdgeInsets.all(8.0),
+        child: Text(
+          row.getCells()[7].value.toString(),
+          overflow: TextOverflow.ellipsis,
+        ),
+      ),
+      Container(
+        alignment: Alignment.centerLeft,
+        padding: EdgeInsets.all(8.0),
+        child: Text(
+          row.getCells()[8].value.toString(),
+          overflow: TextOverflow.ellipsis,
+        ),
+      )
+    ]);
   }
 }
