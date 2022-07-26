@@ -3,7 +3,12 @@
 import 'package:flutter/material.dart';
 import 'package:api_flutter/NavDrawer.dart';
 import 'package:api_flutter/Model.dart';
+import 'package:syncfusion_flutter_core/theme.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
+
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:xml2json/xml2json.dart';
 //import 'package:api_flutter/test/data.dart';
 
 class initWS extends StatefulWidget {
@@ -12,7 +17,7 @@ class initWS extends StatefulWidget {
   initWS({required this.filename});
   //print(filename);
 
-  _initWSState createState() => _initWSState(filename);
+  _initWSState createState() => _initWSState();
 
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
@@ -20,99 +25,92 @@ class initWS extends StatefulWidget {
 
 List<Log> paginatedDataSource = [];
 List<Log> _log = [];
+dynamic gg;
 //List<Log> test1 = [];
 
 final int rowsPerPage = 10;
 
 class _initWSState extends State<initWS> {
   late LogDataSource _LogDataSource;
-  final Filename filename;
+  //final Filename filename;
 
   bool showLoadingIndicator = true;
   double pageCount = 0;
 
-  _initWSState(this.filename);
+  // _initWSState(this.filename);
 
   // get filename => this.filename;
 
   @override
   void initState() {
     super.initState();
-    //test1 = getLogList(filename) as List<Log>;
-    // _transactions = List<Log>.from(transactions.map((e) => TransactionModel.fromJson(e)).toList());
-    SBuilder<List<Log>>(
-      stream: getLogList(filename),
-      builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return CircularProgressIndicator();
-        } else {
-          _log = snapshot.data;
-          pageCount = (_log.length / rowsPerPage).ceilToDouble();
-
-          return Container(
-              // _log = snapshot.data;
-              //pageCount = (_log.length / rowsPerPage).ceilToDouble();
-              );
-        }
-      },
-    );
-    // _log = getLogList(filename) as List<Log>;
-    // _LogDataSource = LogDataSource();
-    // pageCount = (_log.length / rowsPerPage).ceilToDouble();
-    print(pageCount);
-    print("pageCount");
-    print("pageCount");
-    _LogDataSource = LogDataSource();
+    // dynamic filename = widget.filename;
   }
 
   @override
   Widget build(BuildContext context) {
-    //filename1 = widget.filename;
     dynamic filename = widget.filename;
-    String file = filename.path;
-    String fileName = file.split('/').last;
-    //Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(fileName),
-      ),
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          return Row(children: [
-            Column(
-              children: [
-                SizedBox(
-                    height: constraints.maxHeight - 60,
-                    width: constraints.maxWidth,
-                    child: buildStack(constraints)),
-                Container(
-                  height: 60,
-                  width: constraints.maxWidth,
-                  child: SfDataPager(
-                    pageCount: pageCount,
-                    direction: Axis.horizontal,
-                    onPageNavigationStart: (int pageIndex) {
-                      setState(() {
-                        showLoadingIndicator = true;
-                      });
-                    },
-                    delegate: _LogDataSource,
-                    onPageNavigationEnd: (int pageIndex) {
-                      setState(() {
-                        showLoadingIndicator = false;
-                      });
-                    },
-                  ),
-                )
-              ],
+    //print(filename.path);
+    return SafeArea(
+        child: Scaffold(
+            appBar: AppBar(
+              title: Text(filename.path),
             ),
-          ]);
-        },
-      ),
-    );
+            body: LayoutBuilder(builder: (context, constraints) {
+              return Row(children: [
+                Container(
+                    child: Column(children: [
+                  SizedBox(
+                      height: constraints.maxHeight - 60,
+                      width: constraints.maxWidth,
+                      child: buildStack(constraints)),
+                  Container(
+                      height: 60,
+                      width: constraints.maxWidth,
+                      child: FutureBuilder<List<Log>>(
+                          future: getLogList(filename),
+                          builder: (BuildContext context,
+                              AsyncSnapshot<dynamic> snapshot) {
+                            if (snapshot.hasError) {
+                              return Center(
+                                child: Text("${snapshot.error}",
+                                    style: TextStyle(color: Colors.redAccent)),
+                              );
+                            }
+
+                            if (snapshot.hasData) {
+                              _log = snapshot.data;
+                              _LogDataSource = LogDataSource();
+                              pageCount =
+                                  (_log.length / rowsPerPage).ceilToDouble();
+                              print("+++++++++++++++++++++++++++++++");
+
+                              print(pageCount);
+                            }
+
+                            return SfDataPager(
+                              pageCount: pageCount,
+                              direction: Axis.horizontal,
+                              onPageNavigationStart: (int pageIndex) {
+                                setState(() {
+                                  showLoadingIndicator = true;
+                                });
+                              },
+                              delegate: _LogDataSource,
+                              onPageNavigationEnd: (int pageIndex) {
+                                setState(() {
+                                  showLoadingIndicator = false;
+                                });
+                              },
+                            );
+                          }))
+                ]))
+              ]);
+            })));
   }
 
   Widget buildDataGrid(BoxConstraints constraint) {
+    //var _LogDataSource;
     return SfDataGrid(
         source: _LogDataSource,
         columnWidthMode: ColumnWidthMode.fill,
@@ -213,10 +211,45 @@ class _initWSState extends State<initWS> {
       children: _getChildren(),
     );
   }
+
+  Future<List<Log>> getLogList(filename) async {
+    String value = filename.path;
+    Codec<String, String> stringToBase64Url = utf8.fuse(base64Url);
+    String encoded = stringToBase64Url.encode(value);
+
+    var url = "http://192.168.0.101:5500//data/" + encoded;
+    var response = await http.get(Uri.parse(url));
+    var data1;
+    dynamic datalistdy = [];
+
+    if (response.statusCode == 200) {
+      Xml2Json xml2json = Xml2Json();
+      xml2json.parse(response.body);
+      var json = xml2json.toGData();
+      data1 = jsonDecode(json);
+      dynamic data2 = data1['catalog']['loglist'];
+      for (int i = 0; i < data2.length; i++) {
+        data2.removeWhere((e) => e['log'] == null);
+        datalistdy.add(data2[i]['log']);
+        //print(data2[i]['log']);
+      }
+    }
+    var test = jsonEncode(datalistdy);
+    var decodedLogs = json.decode(test).cast<Map<String, dynamic>>();
+    List<Log> logList =
+        await decodedLogs.map<Log>((json) => Log.fromJson(json)).toList();
+
+    // print("decodedLogs");
+
+    //print(decodedLogs);
+    return logList;
+  }
 }
 
 class LogDataSource extends DataGridSource {
   LogDataSource() {
+    print("LogDataSource1");
+    print(_log.length);
     paginatedDataSource = _log.getRange(0, 10).toList();
     buildDataGridRows();
   }
@@ -231,6 +264,8 @@ class LogDataSource extends DataGridSource {
     await Future.delayed(const Duration(seconds: 3));
     int startIndex = newPageIndex * rowsPerPage;
     int endIndex = startIndex + rowsPerPage;
+    print("LogDataSource2");
+    print(_log.length);
     if (startIndex < _log.length) {
       if (endIndex > _log.length) {
         endIndex = _log.length;

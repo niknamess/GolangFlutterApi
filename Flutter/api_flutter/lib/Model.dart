@@ -91,7 +91,7 @@ class Log1 {
   final String extMessage;
 }
 
-Stream<List<Log>> getLogList(filename) async {
+/* Future<List<Log>> getLogList(filename) async {
   String value = filename.path;
   Codec<String, String> stringToBase64Url = utf8.fuse(base64Url);
   String encoded = stringToBase64Url.encode(value);
@@ -123,3 +123,4 @@ Stream<List<Log>> getLogList(filename) async {
   //print(decodedLogs);
   return logList;
 }
+ */
