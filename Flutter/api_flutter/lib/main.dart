@@ -12,7 +12,7 @@ void enablePlatformOverrideForDesktop() {
 }
 
 void main() {
-  enablePlatformOverrideForDesktop();
+  // enablePlatformOverrideForDesktop();
 
   runApp(MyApp());
 }
