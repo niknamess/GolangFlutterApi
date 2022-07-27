@@ -192,7 +192,7 @@ func filedata(w http.ResponseWriter, r *http.Request) {
 		//fmt.Println(listdata)
 		listdata = append(listdata, "</catalog>")
 		result2 := strings.Join(listdata, " ")
-		fmt.Println(result2)
+		//	fmt.Println(result2)
 
 		w.Header().Set("content-type", "application/xml")
 		w.Write([]byte(result2))
