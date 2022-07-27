@@ -1,13 +1,8 @@
-// ignore_for_file: dead_code
-
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:api_flutter/screens/NavDrawer.dart';
+import 'package:api_flutter/screens/sidebar.dart';
 import 'package:api_flutter/model/Model.dart';
 import 'package:api_flutter/data/data.dart';
-
-import 'package:api_flutter/test/data.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 import 'package:xml2json/xml2json.dart';
 
@@ -24,7 +19,6 @@ class initWS extends StatefulWidget {
 }
 
 List<Log> paginatedDataSource = [];
-//List<LogTest> _log = [];
 List<Log> _log = <Log>[];
 dynamic gg;
 
@@ -44,8 +38,6 @@ class _initWSState extends State<initWS> {
     print("filename1");
     LogiApi.getLogs(filename).then((response) {
       setState(() {
-        //print("response.body");
-        //print(response.body);
         var data1;
         dynamic datalistdy = [];
 
@@ -58,7 +50,6 @@ class _initWSState extends State<initWS> {
           for (int i = 0; i < data2.length; i++) {
             data2.removeWhere((e) => e['log'] == null);
             datalistdy.add(data2[i]['log']);
-            //print(data2[i]['log']);
           }
         }
         var str = jsonEncode(datalistdy);
@@ -67,8 +58,6 @@ class _initWSState extends State<initWS> {
         _log = list.map((model) => Log.fromJson(model)).toList();
         _LogDataSource = LogDataSource();
         pageCount = (_log.length / rowsPerPage).ceilToDouble();
-        print("pageCount");
-        print(pageCount);
       });
     });
   }
@@ -77,49 +66,21 @@ class _initWSState extends State<initWS> {
   void initState() {
     super.initState();
     getCharactersfromApi();
-    //print(filename.path);
-    //print("filename2");
-    //   _log = populateData();
-    //_LogDataSource = LogDataSource();
-    //pageCount = (_log.length / rowsPerPage).ceilToDouble();
   }
 
   @override
   Widget build(BuildContext context) {
     dynamic filename = widget.filename;
-    //print(filename.path);
     print("build");
-
     print(filename.path);
     print("build");
-    //buildLogLisstt(filename);
     return SafeArea(
         child: Scaffold(
             appBar: AppBar(
               title: Text(filename.path),
             ),
             body: LayoutBuilder(builder: (context, constraints) {
-              return /* FutureBuilder<List<Log>>(
-            future: getLogList(filename),
-            builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-              if (snapshot.hasError) {
-                return Center(
-                  child: Text("${snapshot.error}",
-                      style: TextStyle(color: Colors.redAccent)),
-                );
-              }
-
-              if (snapshot.hasData) {
-                _log = snapshot.data;
-                _LogDataSource = LogDataSource();
-                //_LogDataSource = LogDataSource();
-                pageCount = (_log.length / rowsPerPage).ceilToDouble();
-                print("+++++++++++++++++++++++++++++++");
-
-                print(pageCount);
-              }
-              return */
-                  Row(children: [
+              return Row(children: [
                 Container(
                     child: Column(children: [
                   SizedBox(
@@ -134,7 +95,6 @@ class _initWSState extends State<initWS> {
                         direction: Axis.horizontal,
                         onPageNavigationStart: (int pageIndex) {
                           setState(() {
-                            //_LogDataSource = LogDataSource();
                             showLoadingIndicator = true;
                           });
                         },
@@ -151,19 +111,21 @@ class _initWSState extends State<initWS> {
   }
 
   Widget buildDataGrid(BoxConstraints constraint) {
-    //var _LogDataSource;
     return SfDataGrid(
         source: _LogDataSource,
         columnWidthMode: ColumnWidthMode.fill,
-        columns: <GridColumn>[
-          GridTextColumn(
+        allowSorting: true,
+        allowMultiColumnSorting: true,
+        showSortNumbers: true,
+        columns: [
+          GridColumn(
               columnName: 'type',
               width: 100,
               label: Container(
                   padding: EdgeInsets.all(8),
                   alignment: Alignment.centerLeft,
                   child: Text('type'))),
-          GridTextColumn(
+          GridColumn(
               columnName: 'module_name',
               width: 120,
               label: Container(
@@ -171,7 +133,7 @@ class _initWSState extends State<initWS> {
                   alignment: Alignment.centerLeft,
                   child: Text('module_name',
                       overflow: TextOverflow.clip, softWrap: true))),
-          GridTextColumn(
+          GridColumn(
               columnName: 'app_path',
               width: 100,
               label: Container(
@@ -179,7 +141,7 @@ class _initWSState extends State<initWS> {
                   alignment: Alignment.centerLeft,
                   child: Text('app_path',
                       overflow: TextOverflow.clip, softWrap: true))),
-          GridTextColumn(
+          GridColumn(
               columnName: 'app_pid',
               width: 100,
               label: Container(
@@ -187,7 +149,7 @@ class _initWSState extends State<initWS> {
                   alignment: Alignment.centerLeft,
                   child: Text('app_pid',
                       overflow: TextOverflow.clip, softWrap: true))),
-          GridTextColumn(
+          GridColumn(
               columnName: 'thread_id',
               width: 95,
               label: Container(
@@ -195,28 +157,28 @@ class _initWSState extends State<initWS> {
                   alignment: Alignment.centerLeft,
                   child: Text('thread_id',
                       overflow: TextOverflow.clip, softWrap: true))),
-          GridTextColumn(
+          GridColumn(
               columnName: 'time',
               width: 150,
               label: Container(
                   padding: EdgeInsets.all(8),
                   alignment: Alignment.centerLeft,
                   child: Text('time'))),
-          GridTextColumn(
+          GridColumn(
               columnName: 'ulid',
               width: 150,
               label: Container(
                   padding: EdgeInsets.all(8),
                   alignment: Alignment.centerLeft,
                   child: Text('ulid'))),
-          GridTextColumn(
+          GridColumn(
               columnName: 'message',
               width: 300,
               label: Container(
                   padding: EdgeInsets.all(8),
                   alignment: Alignment.centerLeft,
                   child: Text('message'))),
-          GridTextColumn(
+          GridColumn(
               columnName: 'ext_message',
               width: 465,
               label: Container(

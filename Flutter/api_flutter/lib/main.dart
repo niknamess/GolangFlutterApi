@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:api_flutter/screens/NavDrawer.dart';
+import 'package:api_flutter/screens/sidebar.dart';
+import 'package:api_flutter/screens/fitches.dart';
+
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 void enablePlatformOverrideForDesktop() {
   if (!kIsWeb && (Platform.isMacOS || Platform.isWindows || Platform.isLinux)) {
@@ -46,7 +49,21 @@ class _MyHomePageState extends State<MyHomePage> {
         appBar: AppBar(
           title: Text("Flutter Logi2 Demo"),
         ),
-        body: Center(child: Center(child: Text("This is Home page"))),
+        body: LayoutBuilder(builder: (context, constraints) {
+          return Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Container(
+                  width: constraints.maxWidth - 100,
+                  height: 50.0,
+                  child: InputX()),
+              Container(
+                  width: constraints.maxWidth - 1000,
+                  height: constraints.maxHeight - 1000,
+                  child: Calendar())
+            ],
+          );
+        }),
         drawer: NavDrawer());
   }
 }

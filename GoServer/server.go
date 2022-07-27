@@ -36,12 +36,7 @@ var (
 	datestartend string
 	savefiles    []string
 	stringF      bool
-	//SearchMap     map[string]logenc.LogList
-	//date_layout   = "01/02/2006"
-	//startUnixTime int64
-	//endUnixTime   int64
-	//pointH        string
-	//filename      string
+
 	PrevNetConn net.Conn
 	dir         = kingpin.Arg("dir", "Directory path(s) to look for files").Default(pathdata + "/repdata").ExistingFilesOrDirs()
 	cron        = kingpin.Flag("cron", "").Short('t').Default("1h").String()
