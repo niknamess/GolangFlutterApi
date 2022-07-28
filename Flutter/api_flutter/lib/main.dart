@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:api_flutter/screens/sidebar.dart';
-import 'package:api_flutter/screens/fitches.dart';
+import 'package:api_flutter/screens/fitches_wiidgets.dart';
 
 import 'dart:io';
 
@@ -54,13 +54,18 @@ class _MyHomePageState extends State<MyHomePage> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               Container(
-                  width: constraints.maxWidth - 100,
+                  width: constraints.maxWidth * 0.55,
                   height: 50.0,
                   child: InputX()),
               Container(
-                  width: constraints.maxWidth - 1000,
-                  height: constraints.maxHeight - 1000,
-                  child: Calendar())
+                  width: constraints.maxWidth * 0.55,
+                  height: constraints.maxHeight * 0.55,
+                  child: Calendar()),
+              Container(
+                width: constraints.maxWidth * 0.55,
+                height: constraints.maxHeight * 0.55,
+                //child: Calendar()
+              )
             ],
           );
         }),
