@@ -1,18 +1,43 @@
+
+import 'dart:convert' as convert;
+
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:xml2json/xml2json.dart';
 import 'dart:async';
 import 'package:api_flutter/model/Model.dart';
 
+const Windows =  "http://192.168.0.111";
+const Linux = "http://192.168.0.101";
+const port = ":5500";
+double fetchPercentage = 100.0;
+
 class LogiApi {
+ 
   static Future getLogs(filename) async {
     String value = filename.path;
     Codec<String, String> stringToBase64Url = utf8.fuse(base64Url);
     String encoded = stringToBase64Url.encode(value);
-    var url = "http://192.168.0.101:5500//data/" + encoded;
+    var url = Windows+port+"//data/" + encoded;
     var response = await http.get(Uri.parse(url));
     return response;
   }
+  /*
+  static Future<List<File>> fetchFromServerFile() async {
+    var url = Windows+port+"//files/$fetchPercentage";
+    var response = await http.get(Uri.parse(url));
+
+    List<File> filetList = [];
+    if (response.statusCode == 200) {
+      var fileMap = convert.jsonDecode(response.body);
+      for (final item in fileMap) {
+        filetList.add(File.fromJson(item));
+      }
+    }
+    //print(filetList);
+    return filetList;
+  }
+  */
 }
 
 //full example decoded
@@ -21,7 +46,7 @@ Future<List<Log>> getLogList(filename) async {
   Codec<String, String> stringToBase64Url = utf8.fuse(base64Url);
   String encoded = stringToBase64Url.encode(value);
 
-  var url = "http://192.168.0.101:5500//data/" + encoded;
+  var url = Windows+port+"//data/" + encoded;
   var response = await http.get(Uri.parse(url));
   var data1;
   dynamic datalistdy = [];
@@ -45,3 +70,6 @@ Future<List<Log>> getLogList(filename) async {
 
   return logList;
 }
+
+
+

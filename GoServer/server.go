@@ -26,7 +26,7 @@ import (
 const port = ":5500"
 
 var (
-	pathdata = "/var/local/logi2"
+	pathdata = "E:/Project/GitFlutter/GolangFlutterApi/Testdata"
 	//pathdata = "/var/local/logi2"
 	upgrader = websocket.Upgrader{
 		ReadBufferSize:  1024,
@@ -166,7 +166,7 @@ func filedata(w http.ResponseWriter, r *http.Request) {
 		listdata = append(listdata, "<?xml version=\"1.0\" encoding=\"UTF-8\"?><catalog>")
 		fileN := filepath.Base(filename)
 		fmt.Println("Start ", filename)
-		t, err := tail.TailFile("/var/local/logi2/repdata/"+fileN,
+		t, err := tail.TailFile(pathdata+"/repdata/"+fileN,
 			tail.Config{
 				//ReOpen: true,
 				Follow: false,

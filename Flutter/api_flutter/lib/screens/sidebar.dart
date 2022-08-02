@@ -5,6 +5,7 @@ import 'dart:convert' as convert;
 import 'package:path/path.dart';
 import 'package:api_flutter/screens/content.dart';
 import 'package:api_flutter/main.dart';
+import 'package:api_flutter/data/data.dart';
 
 class Filename {
   String path;
@@ -95,7 +96,7 @@ class NavDrawer extends StatelessWidget {
   }
 
   Future<List<File>> fetchFromServerFile() async {
-    var url = "http://192.168.0.101:5500//files/$fetchPercentage";
+    var url = "http://192.168.0.111:5500//files/$fetchPercentage";
     var response = await http.get(Uri.parse(url));
 
     List<File> filetList = [];
@@ -108,4 +109,5 @@ class NavDrawer extends StatelessWidget {
     //print(filetList);
     return filetList;
   }
+  
 }
