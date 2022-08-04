@@ -1,8 +1,9 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 class Calendar extends StatelessWidget {
+  const Calendar({super.key});
+
   void _onSelectionChanged(DateRangePickerSelectionChangedArgs args) {
     if (args.value is PickerDateRange) {
       final DateTime rangeStartDate = args.value.startDate;
@@ -21,14 +22,14 @@ class Calendar extends StatelessWidget {
     return MaterialApp(
         home: Scaffold(
       appBar: AppBar(
-        title: Text('DatePicker demo'),
+        title: const Text('DatePicker demo'),
       ),
       body: SfDateRangePicker(
         onSelectionChanged: _onSelectionChanged,
         selectionMode: DateRangePickerSelectionMode.range,
         initialSelectedRange: PickerDateRange(
-            DateTime.now().subtract(Duration(days: 4)),
-            DateTime.now().add(Duration(days: 3))),
+            DateTime.now().subtract(const Duration(days: 4)),
+            DateTime.now().add(const Duration(days: 3))),
       ),
     ));
   }
@@ -36,6 +37,8 @@ class Calendar extends StatelessWidget {
 
 //const InputDecoratorExample({Key? key}) : super(key: key);
 class InputX extends StatelessWidget {
+  const InputX({super.key});
+
   // const InputDecorator({Key? key}) : super(key: key);
 
   @override

@@ -1,4 +1,4 @@
-import 'package:api_flutter/screens/content.dart';
+import 'package:api_flutter/screens/table.dart';
 import 'package:api_flutter/model/Model.dart';
 
 List<LogTest> populateData() {
